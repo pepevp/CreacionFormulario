@@ -84,7 +84,8 @@
             <h2>Encuesta Adicional</h2>
             <div class="mb-3">
                 <label class="form-label">Calificación de eventos anteriores</label>
-                <input type="range" name="calificacion" min="1" max="10" class="form-range">
+                <input type="range" name="calificacion" min="1" max="10" class="form-range" id="calificacionRange">
+                <span id="valorCalificacion">5</span>
             </div>
             <div class="mb-3">
                 <label class="form-label">Comentarios adicionales</label>
@@ -99,7 +100,9 @@
         </form>
         <div id="respuesta" class="mt-4"></div>
     </div>
+
     <script>
+        // Validación y envío del formulario
         document.getElementById('registroForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
@@ -123,12 +126,21 @@
                         respuesta.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
                     } else {
                         respuesta.innerHTML = `<div class="alert alert-success">¡Registro exitoso!</div>
-      <ul class="list-group">${Object.entries(data).map(([k, v]) => `<li class="list-group-item"><strong>${k}:</strong> ${v}</li>`).join('')}</ul>`;
+            <ul class="list-group">${Object.entries(data).map(([k, v]) => `<li class="list-group-item"><strong>${k}:</strong> ${v}</li>`).join('')}</ul>`;
                     }
                 })
                 .catch(err => {
                     document.getElementById('respuesta').innerHTML = '<div class="alert alert-danger">Error en la petición.</div>';
                 });
+        });
+
+        // Mostrar el valor actual del slider
+        const calificacion = document.getElementById('calificacionRange');
+        const valor = document.getElementById('valorCalificacion');
+        valor.textContent = calificacion.value;
+
+        calificacion.addEventListener('input', () => {
+            valor.textContent = calificacion.value;
         });
     </script>
 </body>

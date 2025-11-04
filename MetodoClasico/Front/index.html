@@ -10,8 +10,7 @@
 
 <body>
     <div class="container mt-5">
-        <form class="needs-validation" action="../back/procesar_evento.php" method="POST" enctype="multipart/form-data"
-            novalidate>
+        <form class="needs-validation" action="../back/procesar_evento.php" method="POST" enctype="multipart/form-data" novalidate>
             <h2>Información Personal</h2>
             <div class="mb-3">
                 <label class="form-label">Nombre completo</label>
@@ -93,7 +92,8 @@
             <h2>Encuesta adicional</h2>
             <div class="mb-3">
                 <label class="form-label">Calificación de eventos anteriores</label>
-                <input type="range" name="calificacion" min="1" max="10" class="form-range">
+                <input type="range" name="calificacion" min="1" max="10" class="form-range" id="calificacionRange">
+                <span id="valorCalificacion">5</span>
             </div>
             <div class="mb-3">
                 <label class="form-label">Comentarios adicionales</label>
@@ -107,6 +107,7 @@
             <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
     </div>
+
     <script>
         (() => {
             'use strict'
@@ -127,6 +128,15 @@
                 }, false)
             })
         })();
+
+        // Mostrar el valor actual del slider
+        const calificacion = document.getElementById('calificacionRange');
+        const valor = document.getElementById('valorCalificacion');
+        valor.textContent = calificacion.value;
+
+        calificacion.addEventListener('input', () => {
+            valor.textContent = calificacion.value;
+        });
     </script>
 </body>
 
