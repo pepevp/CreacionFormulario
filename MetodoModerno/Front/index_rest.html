@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Asistentes REST</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <form id="registroForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <h2>Información Personal</h2>
+            <div class="mb-3">
+                <label class="form-label">Nombre completo</label>
+                <input type="text" name="nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Número de teléfono</label>
+                <input type="tel" name="telefono" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input type="date" name="fecha_nacimiento" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Género</label>
+                <div>
+                    <input type="radio" name="genero" value="Masculino" required> Masculino
+                    <input type="radio" name="genero" value="Femenino"> Femenino
+                </div>
+            </div>
+            <hr>
+            <h2>Información del Evento</h2>
+            <div class="mb-3">
+                <label class="form-label">Fecha del evento</label>
+                <input type="date" name="fecha_evento" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tipo de entrada</label>
+                <select name="tipo_entrada" class="form-select" required>
+                    <option value="">Seleccione…</option>
+                    <option value="General">General</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Estudiante">Estudiante</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Preferencias de comida</label><br>
+                <input type="checkbox" name="comida[]" value="Vegetariano"> Vegetariano
+                <input type="checkbox" name="comida[]" value="Vegano"> Vegano
+                <input type="checkbox" name="comida[]" value="Sin gluten"> Sin gluten
+                <input type="checkbox" name="comida[]" value="Sin preferencias"> Sin preferencias
+            </div>
+            <hr>
+            <h2>Información de Acceso</h2>
+            <div class="mb-3">
+                <label class="form-label">Nombre de usuario</label>
+                <input type="text" name="usuario" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" name="contrasena" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Confirmación de contraseña</label>
+                <input type="password" name="confirmar_contrasena" class="form-control" required>
+            </div>
+            <hr>
+            <h2>Preferencias de Contacto</h2>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="notificaciones" class="form-check-input" id="notificaciones">
+                <label class="form-check-label" for="notificaciones">¿Desea recibir notificaciones por correo?</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="terminos" class="form-check-input" id="terminos" required>
+                <label class="form-check-label" for="terminos">Acepta los términos y condiciones *</label>
+            </div>
+            <hr>
+            <h2>Encuesta Adicional</h2>
+            <div class="mb-3">
+                <label class="form-label">Calificación de eventos anteriores</label>
+                <input type="range" name="calificacion" min="1" max="10" class="form-range">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comentarios adicionales</label>
+                <textarea name="comentarios" class="form-control"></textarea>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <label class="form-label">Adjuntar archivo</label>
+                <input type="file" name="archivo" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar (REST)</button>
+        </form>
+        <div id="respuesta" class="mt-4"></div>
+    </div>
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return false;
+            }
+            if (form.contrasena.value !== form.confirmar_contrasena.value) {
+                form.confirmar_contrasena.classList.add('is-invalid');
+                return false;
+            }
+            let datos = new FormData(form);
+            fetch('../back/api_evento.php', {
+                method: "POST",
+                body: datos
+            })
+                .then(res => res.json())
+                .then(data => {
+                    let respuesta = document.getElementById('respuesta');
+                    if (data.error) {
+                        respuesta.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+                    } else {
+                        respuesta.innerHTML = `<div class="alert alert-success">¡Registro exitoso!</div>
+      <ul class="list-group">${Object.entries(data).map(([k, v]) => `<li class="list-group-item"><strong>${k}:</strong> ${v}</li>`).join('')}</ul>`;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('respuesta').innerHTML = '<div class="alert alert-danger">Error en la petición.</div>';
+                });
+        });
+    </script>
+</body>
+
+</html>
