@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Registro de Asistentes REST</title>
@@ -34,6 +33,7 @@
                     <input type="radio" name="genero" value="Femenino"> Femenino
                 </div>
             </div>
+
             <hr>
             <h2>Información del Evento</h2>
             <div class="mb-3">
@@ -56,6 +56,7 @@
                 <input type="checkbox" name="comida[]" value="Sin gluten"> Sin gluten
                 <input type="checkbox" name="comida[]" value="Sin preferencias"> Sin preferencias
             </div>
+
             <hr>
             <h2>Información de Acceso</h2>
             <div class="mb-3">
@@ -70,6 +71,7 @@
                 <label class="form-label">Confirmación de contraseña</label>
                 <input type="password" name="confirmar_contrasena" class="form-control" required>
             </div>
+
             <hr>
             <h2>Preferencias de Contacto</h2>
             <div class="mb-3 form-check">
@@ -80,61 +82,68 @@
                 <input type="checkbox" name="terminos" class="form-check-input" id="terminos" required>
                 <label class="form-check-label" for="terminos">Acepta los términos y condiciones *</label>
             </div>
+
             <hr>
             <h2>Encuesta Adicional</h2>
             <div class="mb-3">
                 <label class="form-label">Calificación de eventos anteriores</label>
-                <input type="range" name="calificacion" min="1" max="10" class="form-range" id="calificacionRange">
+                <input type="range" name="calificacion" min="1" max="10" value="5" class="form-range" id="calificacionRange">
                 <span id="valorCalificacion">5</span>
             </div>
             <div class="mb-3">
                 <label class="form-label">Comentarios adicionales</label>
                 <textarea name="comentarios" class="form-control"></textarea>
             </div>
+
             <hr>
             <div class="mb-3">
                 <label class="form-label">Adjuntar archivo</label>
                 <input type="file" name="archivo" class="form-control">
             </div>
+
             <button type="submit" class="btn btn-primary">Registrar (REST)</button>
         </form>
         <div id="respuesta" class="mt-4"></div>
     </div>
 
     <script>
-        // Validación y envío del formulario
         document.getElementById('registroForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
+
             if (!form.checkValidity()) {
                 form.classList.add('was-validated');
-                return false;
+                return;
             }
+
             if (form.contrasena.value !== form.confirmar_contrasena.value) {
                 form.confirmar_contrasena.classList.add('is-invalid');
-                return false;
+                return;
             }
+
             let datos = new FormData(form);
+
             fetch('../back/api_evento.php', {
                 method: "POST",
                 body: datos
             })
                 .then(res => res.json())
                 .then(data => {
-                    let respuesta = document.getElementById('respuesta');
                     if (data.error) {
-                        respuesta.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+                        document.getElementById('respuesta').innerHTML =
+                            '<div class="alert alert-danger">' + data.error + '</div>';
                     } else {
-                        respuesta.innerHTML = `<div class="alert alert-success">¡Registro exitoso!</div>
-            <ul class="list-group">${Object.entries(data).map(([k, v]) => `<li class="list-group-item"><strong>${k}:</strong> ${v}</li>`).join('')}</ul>`;
+                        // 🔥 Redirigir a nueva página enviando los datos
+                        window.location.href = "../back/resultado.php?data=" + encodeURIComponent(btoa(JSON.stringify(data)));
+
                     }
                 })
-                .catch(err => {
-                    document.getElementById('respuesta').innerHTML = '<div class="alert alert-danger">Error en la petición.</div>';
+                .catch(() => {
+                    document.getElementById('respuesta').innerHTML =
+                        '<div class="alert alert-danger">Error en la petición.</div>';
                 });
         });
 
-        // Mostrar el valor actual del slider
         const calificacion = document.getElementById('calificacionRange');
         const valor = document.getElementById('valorCalificacion');
         valor.textContent = calificacion.value;
@@ -144,5 +153,4 @@
         });
     </script>
 </body>
-
 </html>
